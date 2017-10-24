@@ -32,7 +32,12 @@ const char VertexShader[] =
 
 void MetaballHandler::update(float dt) {
 
-	for (int i = 0; i < metaballList.size(); i++) {
+	for (size_t i = 0; i < spawners.size(); i++) {
+		spawners[i]->spawn(dt);
+	}
+
+	for (size_t i = 0; i < metaballList.size(); i++) {
+		
 		metaballList[i]->position += metaballList[i]->velocity;
 
 		metaballList[i]->velocity.y += metaballList[i]->weight;
@@ -62,18 +67,24 @@ void MetaballHandler::draw(sf::RenderWindow * window) {
 
 	}
 
-	metaballShadedTexture.draw(metaballAddSprite, renderState);
+	metaballShadedTexture.draw(metaballAddSprite, &shader);
 
 	window->draw(metaballShadedSprite);
 
 }
 
+void MetaballHandler::addSpawner(class MetaballSpawner * metaballSpawner) {
+
+	spawners.push_back(metaballSpawner);
+
+}
+
 void MetaballHandler::addMetaball(sf::Vector2f position, sf::Vector2f velocity, float lifespan, float weight, int spreadX, int spreadY) {
 
-	float xMod = (rand() % spreadX) / 10.0f;
+	float xMod = (rand() % spreadX) * 0.10f;
 	if (rand() % 2 == 1)
 		xMod = -xMod;
-	float yMod = (rand() % spreadY) / 10.0f;
+	float yMod = (rand() % spreadY) * 0.10f;
 	if (rand() % 2 == 1)
 		yMod = -yMod;
 
@@ -97,14 +108,18 @@ void MetaballHandler::removeMetaball(int i) {
 
 void MetaballHandler::clean() {
 
-	for (int i = 0; i < metaballList.size(); i++) {
+	for (size_t i = 0; i < metaballList.size(); i++) {
 		delete(metaballList[i]);
-		metaballList.erase(metaballList.begin() + i);
 	}
+	metaballList.clear();
+	for (size_t i = 0; i < spawners.size(); i++) {
+		delete(spawners[i]);
+	}
+	spawners.clear();
 
 }
 
-MetaballHandler::MetaballHandler(sf::Vector2u windowSize) {
+MetaballHandler::MetaballHandler() {
 
 	metaballTexture.loadFromFile("metaball.png");
 	metaballSprite.setTexture(metaballTexture);
@@ -121,7 +136,11 @@ MetaballHandler::MetaballHandler(sf::Vector2u windowSize) {
 		exit(1);
 	}
 
-	renderState.shader = &shader;
+	shader.setUniform("threshold", THRESHOLD);
+
+}
+
+void MetaballHandler::init(sf::Vector2u windowSize) {
 
 	metaballAddTexture.create(windowSize.x, windowSize.y);
 	metaballShadedTexture.create(windowSize.x, windowSize.y);
@@ -129,11 +148,9 @@ MetaballHandler::MetaballHandler(sf::Vector2u windowSize) {
 	metaballAddSprite.setTexture(metaballAddTexture.getTexture());
 	metaballShadedSprite.setTexture(metaballShadedTexture.getTexture());
 
-	shader.setUniform("threshold", THRESHOLD);
-
 }
 
-MetaballSpawner::MetaballSpawner(MetaballHandler * handler, sf::Vector2f position, sf::Vector2f velocity, float weight, float lifespan, int spawnPerSecond, int spreadX, int spreadY) {
+MetaballSpawner::MetaballSpawner(MetaballHandler * handler, sf::Vector2f position, sf::Vector2f velocity, float weight, float lifespan, int spawnPerSecond, int spreadX, int spreadY, float maxMetaballs) {
 
 	this->handler = handler;
 
@@ -144,12 +161,13 @@ MetaballSpawner::MetaballSpawner(MetaballHandler * handler, sf::Vector2f positio
 	this->spawnPerSecond = spawnPerSecond;
 	this->spreadX = spreadX;
 	this->spreadY = spreadY;
+	this->maxMetaballs = maxMetaballs;
 
 }
 
 void MetaballSpawner::spawn(float dt) {
 
-	toSpawn += spawnPerSecond * dt;
+	toSpawn += spawnPerSecond * maxMetaballs * dt;
 
 	for (int i = 0; i < (int)toSpawn; i++) {
 		handler->addMetaball(this->position, this->velocity, this->lifespan, this->weight, this->spreadX, this->spreadY);
