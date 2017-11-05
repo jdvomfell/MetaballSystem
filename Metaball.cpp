@@ -48,6 +48,15 @@ const char VertexShader[] =
 "gl_FrontColor = gl_Color;"
 "}";
 
+Metaball::Metaball(sf::Vector2f position, sf::Vector2f velocity, float lifespan, float weight) {
+
+	this->position = position;
+	this->velocity = velocity;
+	this->lifespan = lifespan;
+	this->weight = weight;
+
+}
+
 void MetaballHandler::update(float dt) {
 
 	for (size_t i = 0; i < spawners.size(); i++) {
@@ -72,7 +81,7 @@ void MetaballHandler::draw(sf::RenderWindow * window) {
 	metaballAddTexture.clear(sf::Color::Transparent);
 	metaballShadedTexture.clear(sf::Color::Transparent);
 
-	for (int i = 0; i < metaballList.size(); i++) {
+	for (size_t i = 0; i < metaballList.size(); i++) {
 
 		if (metaballList[i]->lifespan < DEFAULT_SCALE)
 			metaballSprite.setScale(sf::Vector2f(metaballList[i]->lifespan, metaballList[i]->lifespan));
@@ -108,12 +117,8 @@ void MetaballHandler::addMetaball(sf::Vector2f position, sf::Vector2f velocity, 
 	if (rand() % 2 == 1)
 		yMod = -yMod;
 
-	Metaball * metaball = new Metaball;
-
-	metaball->position = position;
-	metaball->velocity = velocity + sf::Vector2f(xMod, yMod);
-	metaball->lifespan = lifespan;
-	metaball->weight = weight;
+	velocity += sf::Vector2f(xMod, yMod);
+	Metaball * metaball = new Metaball(position, velocity, lifespan, weight);
 
 	metaballList.push_back(metaball);
 
@@ -166,8 +171,8 @@ MetaballHandler::MetaballHandler() {
 
 void MetaballHandler::init(sf::Vector2f viewSize) {
 
-	metaballAddTexture.create(viewSize.x, viewSize.y);
-	metaballShadedTexture.create(viewSize.x, viewSize.y);
+	metaballAddTexture.create((int)viewSize.x, (int)viewSize.y);
+	metaballShadedTexture.create((int)viewSize.x, (int)viewSize.y);
 
 	metaballAddSprite.setTexture(metaballAddTexture.getTexture());
 	metaballShadedSprite.setTexture(metaballShadedTexture.getTexture());
@@ -179,8 +184,8 @@ void MetaballHandler::init(sf::Vector2f viewSize) {
 // viewSize: The textures new size 
 void MetaballHandler::resizeTexture(sf::Vector2f viewSize) {
 
-	metaballAddTexture.create(viewSize.x, viewSize.y);
-	metaballShadedTexture.create(viewSize.x, viewSize.y);
+	metaballAddTexture.create((int)viewSize.x, (int)viewSize.y);
+	metaballShadedTexture.create((int)viewSize.x, (int)viewSize.y);
 
 }
 

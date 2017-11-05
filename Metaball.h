@@ -16,7 +16,11 @@ const enum COLOR_AREA {INNER, OUTER};
 //		velocity: A vector containing the x and y velocity of the metaball
 //		lifespan: The amount of time remaining before the metaball will be disposed
 //		weight: The weight that is applied to the velocity
-struct Metaball {
+class Metaball{
+
+public:
+
+	Metaball(sf::Vector2f position, sf::Vector2f velocity, float lifespan, float weight);
 
 	sf::Vector2f position;
 	sf::Vector2f velocity;
@@ -53,26 +57,27 @@ class MetaballHandler {
 
 	sf::Shader shader;
 
+	void removeMetaball(int i);
+
 public:
 
 	MetaballHandler();
+
 	void init(sf::Vector2f viewSize);
 	void resizeTexture(sf::Vector2f viewSize);
+	void clean();
 
 	void addSpawner(sf::Vector2f position, sf::Vector2f velocity, float weight, float lifespan, int spawnPerSecond, int spreadX, int spreadY, float maxMetaballs);
 	void addMetaball(sf::Vector2f position, sf::Vector2f velocity, float lifespan, float weight, int spreadX, int spreadY);
 
 	void update(float dt);
 	void draw(sf::RenderWindow * window);
-	void removeMetaball(int i);
 
 	void setColor(COLOR_AREA, float R, float G, float B, float A);
 
-	void clean();
-
 };
 
-// Desc: An entity that spawns metaballs in a specified manner
+// Desc: An entity that spawns metaballs in a specified manner and adds them to the handler
 //		handler: Handles the spawner and the metaballs produced by the spawner
 //		position: A vector containing the x and y coordinates of the spawner
 //		velocity: A vector containing the intial x and y velocity to spawn the metaballs at
@@ -85,9 +90,9 @@ public:
 //		toSpawn: The amount of metaballs that should be spawned since the last tick
 class MetaballSpawner {
 
-	MetaballHandler * handler;
+	friend class MetaballHandler;
 
-public:
+	MetaballHandler * handler;
 
 	sf::Vector2f position;
 	sf::Vector2f velocity;

@@ -5,11 +5,12 @@
 // ToDo: 
 // Add scalability of metaballs
 // Modify to return drawables 
+// Color all enum and functionality
 
 int main()
 {
 
-	srand((int)time(NULL));
+	srand(time(NULL));
 
 	sf::RenderWindow window(sf::VideoMode(1500, 1200), "SFML works!");
 
