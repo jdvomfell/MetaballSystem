@@ -4,19 +4,37 @@
 #include <thread>
 
 const char metaballFragment[] =
-"uniform float threshold;"
+"uniform float outer_threshold;"
+"uniform float inner_threshold;"
 "uniform sampler2D texture;"
+
+"uniform float innerR;"
+"uniform float innerG;"
+"uniform float innerB;"
+"uniform float innerA;"
+
+"uniform float outerR;"
+"uniform float outerG;"
+"uniform float outerB;"
+"uniform float outerA;"
+
 "void main()"
 "{"
-"    vec4 pixel = gl_Color * texture2D(texture, gl_TexCoord[0].xy);;"
-"    if (pixel.a >= threshold) {"
-"        pixel.a = 1.0f;"
-"        pixel.r = 0.0f;"
-"        pixel.g = 0.0f;"
-"        pixel.b = 0.0f;"
+"    vec4 pixel = gl_Color * texture2D(texture, gl_TexCoord[0].xy);"
+"	 if (pixel.g >= inner_threshold) {"
+"       pixel.r = innerR;"
+"		pixel.g = innerG;"
+"		pixel.b = innerB;"
+"		pixel.a = innerA;"
+"	 }" 
+"	 else if (pixel.a >= outer_threshold) {"
+"       pixel.r = outerR;"
+"       pixel.g = outerG;"
+"       pixel.b = outerB;"
+"       pixel.a = outerA;"
 "    }"
 "    else {"
-"        discard;"
+"       discard;"
 "    }"
 "    gl_FragColor = pixel;"
 "}";
@@ -73,9 +91,11 @@ void MetaballHandler::draw(sf::RenderWindow * window) {
 
 }
 
-void MetaballHandler::addSpawner(class MetaballSpawner * metaballSpawner) {
+void MetaballHandler::addSpawner(sf::Vector2f position, sf::Vector2f velocity, float weight, float lifespan, int spawnPerSecond, int spreadX, int spreadY, float maxMetaballs) {
 
-	spawners.push_back(metaballSpawner);
+	MetaballSpawner * spawner = new MetaballSpawner(this, position, velocity, weight, lifespan, spawnPerSecond, spreadX, spreadY, maxMetaballs);
+
+	spawners.push_back(spawner);
 
 }
 
@@ -136,17 +156,50 @@ MetaballHandler::MetaballHandler() {
 		exit(1);
 	}
 
-	shader.setUniform("threshold", THRESHOLD);
+	shader.setUniform("outer_threshold", OUTER_THRESHOLD);
+	shader.setUniform("inner_threshold", INNER_THRESHOLD);
+
+	setColor(INNER, 0, 0, 0, 0);
+	setColor(OUTER, 0, 0, 0, 0);
 
 }
 
-void MetaballHandler::init(sf::Vector2u windowSize) {
+void MetaballHandler::init(sf::Vector2f viewSize) {
 
-	metaballAddTexture.create(windowSize.x, windowSize.y);
-	metaballShadedTexture.create(windowSize.x, windowSize.y);
+	metaballAddTexture.create(viewSize.x, viewSize.y);
+	metaballShadedTexture.create(viewSize.x, viewSize.y);
 
 	metaballAddSprite.setTexture(metaballAddTexture.getTexture());
 	metaballShadedSprite.setTexture(metaballShadedTexture.getTexture());
+
+}
+
+// Desc: Resizes the texture that metaballs are drawn to, should be called when the
+//			screen is resized.
+// viewSize: The textures new size 
+void MetaballHandler::resizeTexture(sf::Vector2f viewSize) {
+
+	metaballAddTexture.create(viewSize.x, viewSize.y);
+	metaballShadedTexture.create(viewSize.x, viewSize.y);
+
+}
+
+// RGBA values between 0 and 1
+void MetaballHandler::setColor(COLOR_AREA colorArea, float R, float G, float B, float A) {
+
+	if (colorArea == INNER) {
+		this->shader.setUniform("innerR", R);
+		this->shader.setUniform("innerG", G);
+		this->shader.setUniform("innerB", B);
+		this->shader.setUniform("innerA", A);
+	}
+
+	else if (colorArea == OUTER) {
+		this->shader.setUniform("outerR", R);
+		this->shader.setUniform("outerG", G);
+		this->shader.setUniform("outerB", B);
+		this->shader.setUniform("outerA", A);
+	}
 
 }
 

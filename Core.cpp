@@ -2,6 +2,10 @@
 
 #include "Metaball.h"
 
+// ToDo: 
+// Add scalability of metaballs
+// Modify to return drawables 
+
 int main()
 {
 
@@ -12,17 +16,14 @@ int main()
 	window.setFramerateLimit(60);
 
 	MetaballHandler metaballHandler;
-	metaballHandler.init(window.getSize());
+	metaballHandler.init(window.getView().getSize());
+	metaballHandler.setColor(INNER, 1.0, 0.7, 0.1, 1);
+	metaballHandler.setColor(OUTER, 0, 0, 0, 1);
 
-	MetaballSpawner * metaballSpawner = new MetaballSpawner(&metaballHandler, sf::Vector2f(300, 1000), sf::Vector2f(0, 0.4f), -0.05f, 3.0f, 10, 5, 5, 1);
-	MetaballSpawner * metaballSpawner1 = new MetaballSpawner(&metaballHandler, sf::Vector2f(600, 400), sf::Vector2f(0, -0.4f), 0.02f, 3.0f, 10, 5, 5, 1);
-	MetaballSpawner * metaballSpawner2 = new MetaballSpawner(&metaballHandler, sf::Vector2f(1000, 400), sf::Vector2f(0, -3.5f), 0.02f, 6.0f, 3, 5, 5, 1);
-	MetaballSpawner * metaballSpawner3 = new MetaballSpawner(&metaballHandler, sf::Vector2f(900, 900), sf::Vector2f(0, 0.0f), 0.00f, 0.5f, 20, 80, 80, 1);
-
-	metaballHandler.addSpawner(metaballSpawner);
-	metaballHandler.addSpawner(metaballSpawner1);
-	metaballHandler.addSpawner(metaballSpawner2);
-	metaballHandler.addSpawner(metaballSpawner3);
+	metaballHandler.addSpawner(sf::Vector2f(300, 1000), sf::Vector2f(0, 0.4f), -0.05f, 3.0f, 10, 5, 5, 1);
+	metaballHandler.addSpawner(sf::Vector2f(600, 400), sf::Vector2f(0, -0.4f), 0.02f, 3.0f, 10, 5, 5, 1);
+	metaballHandler.addSpawner(sf::Vector2f(1000, 400), sf::Vector2f(0, -3.5f), 0.02f, 6.0f, 3, 5, 5, 1);
+	metaballHandler.addSpawner(sf::Vector2f(900, 900), sf::Vector2f(0, 0.0f), 0.00f, 0.5f, 20, 80, 80, 1);
 
 	sf::Clock clock;
 	sf::Time delta;

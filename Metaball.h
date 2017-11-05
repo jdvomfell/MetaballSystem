@@ -6,7 +6,10 @@
 // The scaler applied to the metaballs size
 #define DEFAULT_SCALE 0.5f
 // The alpha threshold where metaballs are no longer visible
-#define THRESHOLD 0.8f
+#define OUTER_THRESHOLD 0.8f
+#define INNER_THRESHOLD 0.9f
+// Inner and Outer color areas
+const enum COLOR_AREA {INNER, OUTER};
 
 // Desc: Basic structure of a single metaball
 //		position: A vector containing the x and y position of the metaball
@@ -53,14 +56,17 @@ class MetaballHandler {
 public:
 
 	MetaballHandler();
-	void init(sf::Vector2u windowSize);
+	void init(sf::Vector2f viewSize);
+	void resizeTexture(sf::Vector2f viewSize);
 
-	void addSpawner(class MetaballSpawner * metaballSpawner);
+	void addSpawner(sf::Vector2f position, sf::Vector2f velocity, float weight, float lifespan, int spawnPerSecond, int spreadX, int spreadY, float maxMetaballs);
 	void addMetaball(sf::Vector2f position, sf::Vector2f velocity, float lifespan, float weight, int spreadX, int spreadY);
 
 	void update(float dt);
 	void draw(sf::RenderWindow * window);
 	void removeMetaball(int i);
+
+	void setColor(COLOR_AREA, float R, float G, float B, float A);
 
 	void clean();
 
@@ -98,7 +104,7 @@ public:
 
 	void spawn(float dt);
 
-	MetaballSpawner(MetaballHandler * handler, sf::Vector2f position, sf::Vector2f velocity, float weight, float lifespan, int spawnPerSecond, int spreadX, int spreadY, float maxMetaballs);
+	MetaballSpawner(MetaballHandler *, sf::Vector2f position, sf::Vector2f velocity, float weight, float lifespan, int spawnPerSecond, int spreadX, int spreadY, float maxMetaballs);
 
 };
 
