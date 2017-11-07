@@ -9,7 +9,7 @@
 #define OUTER_THRESHOLD 0.8f
 #define INNER_THRESHOLD 0.9f
 // Inner and Outer color areas
-const enum COLOR_AREA {INNER, OUTER};
+const enum COLOR_AREA {INNER, OUTER, ALL};
 
 // Desc: Basic structure of a single metaball
 //		position: A vector containing the x and y position of the metaball

@@ -164,8 +164,7 @@ MetaballHandler::MetaballHandler() {
 	shader.setUniform("outer_threshold", OUTER_THRESHOLD);
 	shader.setUniform("inner_threshold", INNER_THRESHOLD);
 
-	setColor(INNER, 0, 0, 0, 0);
-	setColor(OUTER, 0, 0, 0, 0);
+	setColor(ALL, 0, 0, 0, 0);
 
 }
 
@@ -204,6 +203,11 @@ void MetaballHandler::setColor(COLOR_AREA colorArea, float R, float G, float B, 
 		this->shader.setUniform("outerG", G);
 		this->shader.setUniform("outerB", B);
 		this->shader.setUniform("outerA", A);
+	}
+
+	else if (colorArea == ALL) {
+		setColor(INNER, R, G, B, A);
+		setColor(OUTER, R, G, B, A);
 	}
 
 }

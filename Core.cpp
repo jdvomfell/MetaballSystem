@@ -5,7 +5,6 @@
 // ToDo: 
 // Add scalability of metaballs
 // Modify to return drawables 
-// Color all enum and functionality
 
 int main()
 {
